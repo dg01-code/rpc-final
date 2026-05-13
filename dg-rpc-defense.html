@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基于Netty+ZooKeeper+自定义协议的RPC框架设计与实现</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* 主色 */
+  --blue: #1677FF;
+  --blue-light: #4096FF;
+  --blue-dark: #0958D9;
+  --blue-bg: #E6F4FF;
+  --blue-gradient: linear-gradient(135deg, #1677FF, #00B4FF);
+  /* 文字色 */
+  --text: #212121;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --white: #FFFFFF;
+  /* 背景色 */
+  --bg: #FFFFFF;
+  --surface: #F7F8FA;
+  --surface-2: #F0F2F5;
+  /* 边框 */
+  --border: #E8E8E8;
+  --border-light: #F0F0F0;
+  /* 辅助色 */
+  --orange: #FA8C16;
+  --orange-bg: #FFF7E6;
+  --red: #F5222D;
+  --red-bg: #FFF1F0;
+  --green: #52C41A;
+  --green-bg: #F6FFED;
+  --teal: #13C2C2;
+  --teal-bg: #E6FFFB;
+  --purple: #722ED1;
+  --purple-bg: #F9F0FF;
+  /* 字体 */
+  --font: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', 'Menlo', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font);
+  background: var(--surface-2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.kbd-hint {
+  position: fixed; top: 20px; right: 20px;
+  background: rgba(0,0,0,0.05);
+  padding: 10px 16px; border-radius: 8px;
+  font-size: 14px; color: var(--text-muted); z-index: 1000;
+}
+
+.deck {
+  position: relative;
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
+
+/* ===== Slide Base ===== */
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  padding: 56px 72px 80px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+  overflow: hidden;
+  background: var(--white);
+  width: 100vw; height: 100vh; min-height: 100vh;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Content slide top gradient line */
+.slide::before {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 3px;
+  background: var(--blue-gradient);
+}
+
+/* Content slide logo watermark */
+.slide:not(.title-slide):not(.closing-slide)::after {
+  content: '';
+  position: absolute; top: 16px; left: 72px;
+  width: 80px; height: 28px;
+  background-image: url('data:image/png;base64,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');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+}
+
+/* ===== Title Slide ===== */
+.title-slide {
+  text-align: center; justify-content: center; align-items: center;
+  background: linear-gradient(135deg, #1677FF 0%, #00B4FF 100%) !important;
+  color: var(--white);
+  position: absolute; inset: 0; overflow: hidden;
+  padding: 60px 72px 80px;
+  width: 100vw; height: 100vh; min-height: 100vh;
+}
+.title-slide::before { display: none; }
+.title-slide::after {
+  content: '';
+  position: absolute; right: -100px; bottom: -100px;
+  width: 650px; height: 650px;
+  border-radius: 50%;
+  border: 80px solid rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+.title-slide .deco-circle {
+  position: absolute; left: -180px; top: -180px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 50px solid rgba(255,255,255,0.035);
+  pointer-events: none;
+}
+.title-slide .series-tag {
+  font-size: 14px; font-weight: 500;
+  letter-spacing: 4px; text-transform: uppercase;
+  background: rgba(255,255,255,0.12);
+  padding: 8px 28px; border-radius: 24px;
+  margin-bottom: 48px; display: inline-block;
+}
+.title-slide h1 {
+  font-size: 52px; font-weight: 700;
+  line-height: 1.3; margin-bottom: 32px;
+  max-width: 900px;
+}
+.title-slide .sub {
+  font-size: 22px; font-weight: 400;
+  opacity: 0.88; margin-bottom: 24px;
+}
+.title-slide .desc {
+  font-size: 17px; font-weight: 300;
+  opacity: 0.65; max-width: 680px;
+  line-height: 1.7;
+}
+.title-slide .meta {
+  margin-top: 56px;
+  font-size: 16px; opacity: 0.7;
+}
+
+/* ===== Closing Slide ===== */
+.closing-slide {
+  text-align: center; justify-content: center; align-items: center;
+  background: linear-gradient(135deg, #1677FF 0%, #00B4FF 100%) !important;
+  color: var(--white);
+  position: absolute; inset: 0; overflow: hidden;
+  padding: 60px 72px 80px;
+  width: 100vw; height: 100vh; min-height: 100vh;
+}
+.closing-slide::before { display: none; }
+.closing-slide::after {
+  content: '';
+  position: absolute; left: -180px; top: -180px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 50px solid rgba(255,255,255,0.035);
+  pointer-events: none;
+}
+.closing-slide .deco-circle-r {
+  position: absolute; right: -100px; bottom: -100px;
+  width: 650px; height: 650px;
+  border-radius: 50%;
+  border: 80px solid rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+.closing-slide h2 {
+  font-size: 42px; font-weight: 700; margin-bottom: 36px;
+}
+.closing-slide .closing-quote {
+  font-size: 20px; line-height: 1.8;
+  opacity: 0.88; max-width: 700px;
+  background: rgba(255,255,255,0.1);
+  padding: 28px 36px; border-radius: 12px;
+  margin-bottom: 32px;
+}
+.closing-slide .closing-info {
+  font-size: 16px; opacity: 0.65;
+}
+
+/* ===== Section Header ===== */
+.section-header { margin-bottom: 28px; }
+.section-header h2 {
+  font-size: 32px; font-weight: 700; color: var(--text);
+  margin-bottom: 8px;
+}
+.section-header .subtitle {
+  font-size: 15px; color: var(--text-secondary);
+}
+
+/* ===== Cards ===== */
+.cards { display: grid; gap: 16px; }
+.cards-2 { grid-template-columns: 1fr 1fr; }
+.cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+.cards-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.cards-6 { grid-template-columns: repeat(6, 1fr); }
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 22px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.card.blue-top { border-top: 3px solid var(--blue); }
+.card.orange-top { border-top: 3px solid var(--orange); }
+.card.red-top { border-top: 3px solid var(--red); }
+.card.green-top { border-top: 3px solid var(--green); }
+.card.teal-top { border-top: 3px solid var(--teal); }
+.card.purple-top { border-top: 3px solid var(--purple); }
+
+.card-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--blue); color: var(--white);
+  font-size: 14px; font-weight: 700; margin-bottom: 10px;
+}
+.card-title {
+  font-size: 17px; font-weight: 600; color: var(--text);
+  margin-bottom: 8px;
+}
+.card-desc {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== Tags ===== */
+.tag {
+  display: inline-block; padding: 3px 14px;
+  border-radius: 20px; font-size: 12px; font-weight: 500;
+}
+.tag-blue { background: var(--blue-bg); color: var(--blue); }
+.tag-orange { background: var(--orange-bg); color: var(--orange); }
+.tag-green { background: var(--green-bg); color: var(--green); }
+.tag-red { background: var(--red-bg); color: var(--red); }
+.tag-teal { background: var(--teal-bg); color: var(--teal); }
+.tag-purple { background: var(--purple-bg); color: var(--purple); }
+
+/* ===== Table ===== */
+.s-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.s-table th {
+  background: var(--blue); color: var(--white);
+  padding: 12px 18px; text-align: left; font-weight: 500;
+}
+.s-table th:first-child { border-radius: 6px 0 0 0; }
+.s-table th:last-child { border-radius: 0 6px 0 0; }
+.s-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px; color: var(--text-secondary);
+}
+.s-table tr:last-child td { border-bottom: none; }
+
+/* ===== Highlight ===== */
+.highlight {
+  background: var(--blue-bg);
+  border-left: 4px solid var(--blue);
+  padding: 16px 22px; border-radius: 0 10px 10px 0;
+  font-size: 15px; line-height: 1.8; color: var(--text-secondary);
+}
+.highlight em { color: var(--blue); font-style: normal; font-weight: 600; }
+
+/* ===== Pipeline ===== */
+.pipeline { display: flex; flex-direction: column; gap: 10px; }
+.pipe-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface); border-left: 3px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  transition: background 0.2s;
+}
+.pipe-item:hover { background: var(--blue-bg); }
+.pipe-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--blue); color: var(--white);
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.pipe-title { font-size: 15px; font-weight: 600; color: var(--text); min-width: 120px; }
+.pipe-desc { font-size: 14px; color: var(--text-secondary); }
+
+/* ===== Flow ===== */
+.flow-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.flow-box {
+  padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  border: 2px solid transparent;
+}
+.flow-arrow { font-size: 22px; color: var(--text-muted); }
+
+/* ===== Two Column ===== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+
+/* ===== Code Block ===== */
+.code-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 18px 22px;
+  font-family: var(--mono); font-size: 13px;
+  line-height: 1.7; color: var(--text-secondary);
+  overflow: hidden; white-space: pre-wrap;
+}
+
+/* ===== Protocol Header Diagram ===== */
+.proto-header {
+  display: flex; border-radius: 8px; overflow: hidden;
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  margin: 16px 0;
+}
+.proto-field {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 14px 10px;
+  color: var(--white); border-right: 2px solid rgba(255,255,255,0.2);
+}
+.proto-field:last-child { border-right: none; }
+.proto-field .fname { font-size: 11px; opacity: 0.85; margin-bottom: 4px; }
+.proto-field .fsize { font-size: 10px; opacity: 0.65; }
+
+/* ===== Architecture Layer ===== */
+.arch-layers { display: flex; flex-direction: column; gap: 8px; }
+.arch-layer {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 22px; border-radius: 8px;
+  border-left: 4px solid;
+}
+.arch-layer .layer-name {
+  font-size: 15px; font-weight: 600; min-width: 130px;
+}
+.arch-layer .layer-modules {
+  font-size: 13px; color: var(--text-secondary);
+}
+.arch-layer .layer-desc {
+  font-size: 13px; color: var(--text-muted); margin-left: auto;
+}
+
+/* ===== Metric Card ===== */
+.metric-row { display: flex; gap: 20px; justify-content: center; }
+.metric-card {
+  text-align: center; padding: 24px 36px;
+  background: var(--surface); border-radius: 10px;
+  border: 1px solid var(--border); min-width: 160px;
+}
+.metric-value {
+  font-size: 36px; font-weight: 700; color: var(--blue);
+  line-height: 1.2;
+}
+.metric-label {
+  font-size: 13px; color: var(--text-muted); margin-top: 6px;
+}
+
+/* ===== Navigation ===== */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 48px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+}
+.nav button {
+  padding: 8px 20px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--white);
+  font-size: 14px; cursor: pointer; transition: all 0.2s;
+  font-family: var(--font);
+}
+.nav button:hover { background: var(--surface); }
+.nav button.primary {
+  background: var(--blue); color: var(--white);
+  border-color: var(--blue);
+}
+.nav button.primary:hover { background: var(--blue-dark); }
+.nav button:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-dots { display: flex; gap: 6px; }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: all 0.2s;
+}
+.dot.active { background: var(--blue); width: 24px; border-radius: 4px; }
+.page-info { font-size: 14px; color: var(--text-muted); }
+
+/* Nav blue variant for title/closing */
+.nav.nav-blue {
+  background: rgba(0,80,220,0.3);
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+.nav.nav-blue button {
+  background: rgba(255,255,255,0.15); color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+.nav.nav-blue button:hover { background: rgba(255,255,255,0.25); }
+.nav.nav-blue button.primary { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+.nav.nav-blue button.primary:hover { background: rgba(255,255,255,0.4); }
+.nav.nav-blue .page-info { color: rgba(255,255,255,0.7); }
+.nav.nav-blue .dot { background: rgba(255,255,255,0.25); }
+.nav.nav-blue .dot.active { background: #fff; }
+
+/* ===== Print ===== */
+@media print {
+  body { overflow: visible; background: white; }
+  .deck { height: auto; }
+  .slide {
+    position: relative !important; display: flex !important;
+    opacity: 1 !important; page-break-after: always; min-height: 100vh;
+    -webkit-print-color-adjust: exact;
+  }
+  .nav, .kbd-hint { display: none !important; }
+}
+
+/* ===== Content utility ===== */
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.mt-24 { margin-top: 24px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.gap-12 { gap: 12px; }
+.text-center { text-align: center; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+.small-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.mid-text { font-size: 15px; color: var(--text-secondary); line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<div class="kbd-hint">← → 键翻页 &nbsp;|&nbsp; 共 12 页</div>
+
+<div class="deck">
+
+<!-- ==================== SLIDE 1: Title ==================== -->
+<div class="slide title-slide active" data-slide="1">
+  <div class="deco-circle"></div>
+  <div class="series-tag">毕业论文答辩</div>
+  <h1>基于Netty+ZooKeeper+自定义协议的<br>RPC框架设计与实现</h1>
+  <div class="sub">dg-rpc：从零手写的轻量级 RPC 框架</div>
+  <div class="desc">自定义二进制协议 · Netty异步通信 · ZooKeeper服务治理 · Spring注解集成 · SSE链路可视化</div>
+  <div class="meta">答辩人：丁岗 &nbsp;&middot;&nbsp; 学号：2701220304 &nbsp;&middot;&nbsp; 安徽科技工程大学</div>
+</div>
+
+<!-- ==================== SLIDE 2: Outline ==================== -->
+<div class="slide" data-slide="2">
+  <div class="section-header">
+    <h2>汇报大纲</h2>
+    <div class="subtitle">以下将从六个方面展开汇报</div>
+  </div>
+  <div class="cards cards-3" style="margin-top:20px;">
+    <div class="card blue-top" style="text-align:center;">
+      <div class="card-num">1</div>
+      <div class="card-title">选题动机</div>
+      <div class="card-desc">为什么从零手写RPC框架<br>框架定位与目标</div>
+    </div>
+    <div class="card orange-top" style="text-align:center;">
+      <div class="card-num">2</div>
+      <div class="card-title">框架整体架构</div>
+      <div class="card-desc">六层七模块设计<br>按变化点分层</div>
+    </div>
+    <div class="card green-top" style="text-align:center;">
+      <div class="card-num">3</div>
+      <div class="card-title">关键实现</div>
+      <div class="card-desc">自定义协议 · 异步转同步<br>ZooKeeper服务发现 · Spring集成</div>
+    </div>
+    <div class="card teal-top" style="text-align:center;">
+      <div class="card-num">4</div>
+      <div class="card-title">完整调用链路</div>
+      <div class="card-desc">从代理拦截到反射执行<br>端到端调用全流程</div>
+    </div>
+    <div class="card purple-top" style="text-align:center;">
+      <div class="card-num">5</div>
+      <div class="card-title">测试结果</div>
+      <div class="card-desc">功能测试 · 性能基准<br>JSON vs Hessian 对比</div>
+    </div>
+    <div class="card red-top" style="text-align:center;">
+      <div class="card-num">6</div>
+      <div class="card-title">总结与反思</div>
+      <div class="card-desc">六大核心成果<br>不足与改进方向</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: Motivation ==================== -->
+<div class="slide" data-slide="3">
+  <div class="section-header">
+    <h2>选题动机</h2>
+    <div class="subtitle">为什么从零手写一个 RPC 框架？</div>
+  </div>
+  <div class="two-col" style="margin-top:12px;">
+    <div>
+      <div class="highlight" style="margin-bottom:20px;">
+        做分布式开发，RPC 是绕不开的技术——服务拆分后，进程内方法调用变成了跨网络远程调用，开发者要处理<em>序列化、网络传输、服务寻址</em>这些底层问题。
+      </div>
+      <div class="card blue-top">
+        <div class="card-title" style="color:var(--blue);">现有框架的痛点</div>
+        <div class="card-desc">
+          Dubbo、gRPC 功能强大，但代码量大、配置多，初学者很难看清<em>"一次RPC调用到底经历了什么"</em>
+        </div>
+      </div>
+      <div class="card orange-top" style="margin-top:12px;">
+        <div class="card-title" style="color:var(--orange);">dg-rpc 的目标</div>
+        <div class="card-desc">
+          <strong>从零手写轻量级RPC框架，把核心链路走通，让每一步都能说清楚为什么这么做</strong>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card green-top" style="margin-bottom:12px;">
+        <div class="card-title" style="color:var(--green);">框架定位</div>
+        <div class="card-desc">
+          不是替代 Dubbo，而是<em>让你能看清 RPC 每一步在做什么</em>——从代理拦截到协议编码，从服务发现到反射调用，链路完整、代码可读
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--purple);">
+        <div class="card-title" style="color:var(--purple);">技术选型</div>
+        <div class="card-desc">
+          <span class="tag tag-blue" style="margin:2px;">Netty 4.1</span>
+          <span class="tag tag-teal" style="margin:2px;">ZooKeeper</span>
+          <span class="tag tag-orange" style="margin:2px;">自定义二进制协议</span>
+          <span class="tag tag-green" style="margin:2px;">JDK动态代理</span>
+          <span class="tag tag-purple" style="margin:2px;">Spring Boot 3</span>
+          <span class="tag tag-red" style="margin:2px;">SSE可视化</span>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--teal); margin-top:12px;">
+        <div class="card-title" style="color:var(--teal);">核心价值</div>
+        <div class="card-desc" style="font-size:15px;">
+          <strong>看得清</strong>：每层代码可直接读懂<br>
+          <strong>讲得明</strong>：每个决策都有明确理由<br>
+          <strong>跑得通</strong>：端到端链路完整可运行
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: Architecture ==================== -->
+<div class="slide" data-slide="4">
+  <div class="section-header">
+    <h2>框架整体架构</h2>
+    <div class="subtitle">六层七模块，按变化点分层</div>
+  </div>
+  <div class="two-col" style="margin-top:8px;">
+    <div>
+      <div class="arch-layers">
+        <div class="arch-layer" style="background:var(--purple-bg); border-color:var(--purple);">
+          <div class="layer-name" style="color:var(--purple);">演示层</div>
+          <div class="layer-modules"><span class="tag tag-purple">dg-rpc-demo</span></div>
+          <div class="layer-desc">HTTP桥接 + SSE链路可视化 + Benchmark</div>
+        </div>
+        <div class="arch-layer" style="background:var(--green-bg); border-color:var(--green);">
+          <div class="layer-name" style="color:var(--green);">Spring集成层</div>
+          <div class="layer-modules"><span class="tag tag-green">dg-rpc-spring</span></div>
+          <div class="layer-desc">@RpcService @RpcReference 自动配置</div>
+        </div>
+        <div class="arch-layer" style="background:var(--blue-bg); border-color:var(--blue);">
+          <div class="layer-name" style="color:var(--blue);">核心调用层</div>
+          <div class="layer-modules"><span class="tag tag-blue">dg-rpc-core</span></div>
+          <div class="layer-desc">RpcClientProxy · LoadBalancer · Config</div>
+        </div>
+        <div class="arch-layer" style="background:var(--orange-bg); border-color:var(--orange);">
+          <div class="layer-name" style="color:var(--orange);">传输层</div>
+          <div class="layer-modules"><span class="tag tag-orange">dg-rpc-transport</span></div>
+          <div class="layer-desc">Netty Client/Server · Handler · Future</div>
+        </div>
+        <div class="arch-layer" style="background:var(--teal-bg); border-color:var(--teal);">
+          <div class="layer-name" style="color:var(--teal);">注册治理层</div>
+          <div class="layer-modules"><span class="tag tag-teal">dg-rpc-registry</span></div>
+          <div class="layer-desc">ZooKeeper · InMemory · ServiceDiscovery</div>
+        </div>
+        <div class="arch-layer" style="background:var(--red-bg); border-color:var(--red);">
+          <div class="layer-name" style="color:var(--red);">协议层</div>
+          <div class="layer-modules"><span class="tag tag-red">dg-rpc-protocol</span></div>
+          <div class="layer-desc">RpcMessage · 编解码 · 序列化工厂</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="highlight" style="margin-bottom:16px;">
+        <em>按变化点分层</em>——协议格式可能变、注册中心可能换、序列化方式可能换，这些都被隔离成独立模块。改一个不影响其他。
+      </div>
+      <div class="card blue-top" style="margin-bottom:12px;">
+        <div class="card-title">开闭原则</div>
+        <div class="card-desc">
+          序列化 → 实现 <code style="color:var(--blue);">Serializer</code> 接口<br>
+          注册中心 → 实现 <code style="color:var(--blue);">ServiceRegistry</code> + <code style="color:var(--blue);">ServiceDiscovery</code><br>
+          负载均衡 → 实现 <code style="color:var(--blue);">LoadBalancer</code> 接口
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--orange);">
+        <div class="card-title">模块依赖方向</div>
+        <div class="card-desc">
+          core 依赖 transport、registry、protocol<br>
+          transport 不依赖 core，registry 不依赖 core<br>
+          <strong style="color:var(--text);">依赖单向，不循环</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: Custom Protocol ==================== -->
+<div class="slide" data-slide="5">
+  <div class="section-header">
+    <h2>自定义协议头设计</h2>
+    <div class="subtitle">19 字节固定头，解决 TCP 粘包/拆包</div>
+  </div>
+  <div class="proto-header" style="margin-top:12px;">
+    <div class="proto-field" style="background:var(--blue); flex:0 0 100px;">
+      <div class="fname">Magic</div>
+      <div class="fsize">4 字节</div>
+    </div>
+    <div class="proto-field" style="background:var(--purple); flex:0 0 70px;">
+      <div class="fname">Version</div>
+      <div class="fsize">1 字节</div>
+    </div>
+    <div class="proto-field" style="background:var(--green); flex:0 0 70px;">
+      <div class="fname">MsgType</div>
+      <div class="fsize">1 字节</div>
+    </div>
+    <div class="proto-field" style="background:var(--orange); flex:0 0 100px;">
+      <div class="fname">Serializer</div>
+      <div class="fsize">1 字节</div>
+    </div>
+    <div class="proto-field" style="background:var(--teal); flex:0 0 100px;">
+      <div class="fname">RequestId</div>
+      <div class="fsize">8 字节</div>
+    </div>
+    <div class="proto-field" style="background:var(--red); flex:0 0 100px;">
+      <div class="fname">DataLength</div>
+      <div class="fsize">4 字节</div>
+    </div>
+  </div>
+  <div class="cards cards-3 mt-16">
+    <div class="card blue-top">
+      <div class="card-title">Magic 0x44475250</div>
+      <div class="card-desc">"DGRP"的ASCII编码，收到数据先校验魔数，不对直接丢弃——快速排错防误连</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--teal);">
+      <div class="card-title">RequestId 8字节</div>
+      <div class="card-desc">AtomicLong递增，异步通信中匹配请求与响应的关键，2<sup>63</sup> ÷ 100万/秒 ≈ 29万年</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--red);">
+      <div class="card-title">DataLength 4字节</div>
+      <div class="card-desc">配合ByteToMessageDecoder，不够就resetReaderIndex()等待，够了就读取——粘包拆包解法</div>
+    </div>
+  </div>
+  <div class="two-col mt-16">
+    <div class="card" style="border-top:3px solid var(--purple);">
+      <div class="card-title">vs Dubbo 协议头</div>
+      <div class="card-desc" style="font-size:13px;">
+        <table class="s-table" style="font-size:12px;">
+          <tr><th>对比项</th><th>Dubbo</th><th>dg-rpc</th></tr>
+          <tr><td>头长度</td><td>16字节</td><td>19字节</td></tr>
+          <tr><td>Magic</td><td>2字节</td><td>4字节(更不易碰撞)</td></tr>
+          <tr><td>序列化标识</td><td>flag位域(位运算)</td><td>独立1字节(更直观)</td></tr>
+          <tr><td>版本字段</td><td>无</td><td>有(预留升级)</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--orange);">
+      <div class="card-title">编解码核心逻辑</div>
+      <div class="card-desc" style="font-size:13px;">
+        <strong>Encoder</strong>：RpcMessageEncoder extends MessageToByteEncoder<br>
+        → 按19字节头顺序写入ByteBuf<br><br>
+        <strong>Decoder</strong>：RpcMessageDecoder extends ByteToMessageDecoder<br>
+        → readableBytes &lt; 19 → return 等待<br>
+        → markReaderIndex() → 读协议头<br>
+        → readableBytes &lt; dataLength → resetReaderIndex() 等待<br>
+        → 读取数据体，构造RpcMessage
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: Async to Sync ==================== -->
+<div class="slide" data-slide="6">
+  <div class="section-header">
+    <h2>异步转同步：CompletableFuture 桥接</h2>
+    <div class="subtitle">Netty 是异步的，业务代码期望同步调用</div>
+  </div>
+  <div class="highlight mb-16">
+    业务代码写 <code style="color:var(--blue);">helloService.sayHello("world")</code>，期望拿到 String，不想管 Future 和回调。用 <em>CompletableFuture</em> 做桥接，让异步 Netty 变成同步语义。
+  </div>
+  <div class="pipeline" style="margin-top:8px;">
+    <div class="pipe-item">
+      <div class="pipe-num">1</div>
+      <div class="pipe-title">创建 Future</div>
+      <div class="pipe-desc">发请求前，以 requestId 为 key，将 CompletableFuture&lt;RpcResponse&gt; 存入 ConcurrentHashMap 等待表</div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">2</div>
+      <div class="pipe-title">阻塞等待</div>
+      <div class="pipe-desc">调用线程执行 future.get(requestTimeoutMs, MILLISECONDS)，默认超时5秒</div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">3</div>
+      <div class="pipe-title">响应到达</div>
+      <div class="pipe-desc">RpcClientHandler.channelRead 根据 requestId 从等待表取出 Future，调 future.complete(response)</div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">4</div>
+      <div class="pipe-title">唤醒返回</div>
+      <div class="pipe-desc">调用线程被唤醒，检查异常/JSON类型矫正，返回结果给业务代码</div>
+    </div>
+  </div>
+  <div class="two-col mt-20">
+    <div class="card blue-top">
+      <div class="card-title">两层 Future 的区别</div>
+      <div class="card-desc" style="font-size:13px;">
+        <strong style="color:var(--blue);">ChannelFuture</strong>（Netty层）<br>
+        → channel.writeAndFlush() 返回<br>
+        → 代表"消息是否写到了网络缓冲区"<br><br>
+        <strong style="color:var(--orange);">CompletableFuture</strong>（RPC层）<br>
+        → 自己创建和管理<br>
+        → 代表"服务端已处理完并返回了结果"<br><br>
+        <em>管"发出去了没" vs 管"结果回来了没"</em>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--orange);">
+      <div class="card-title">超时与清理</div>
+      <div class="card-desc" style="font-size:13px;">
+        超时 → future.get() 抛 TimeoutException<br>
+        → removePendingRequest(requestId) 清理等待表<br>
+        → future.cancel(true) 释放资源<br>
+        → 包装为 RpcException 抛出<br><br>
+        <span style="color:var(--orange);">IdleStateHandler</span>：客户端30秒、服务端60秒全空闲超时，自动关闭死连接
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: ZooKeeper ==================== -->
+<div class="slide" data-slide="7">
+  <div class="section-header">
+    <h2>ZooKeeper 服务注册与发现</h2>
+    <div class="subtitle">临时顺序节点实现服务自动注册与摘除</div>
+  </div>
+  <div class="two-col" style="margin-top:8px;">
+    <div>
+      <div class="card blue-top" style="margin-bottom:12px;">
+        <div class="card-title" style="color:var(--blue);">服务注册（Provider 启动）</div>
+        <div class="card-desc" style="font-size:13px;">
+          1. 检查持久节点 <code style="color:var(--blue);">/dg-rpc/HelloService</code> 是否存在<br>
+          2. 创建<em>临时顺序节点</em>：<code style="color:var(--blue);">/dg-rpc/HelloService/instance-0000000000</code><br>
+          3. 节点数据 = <code style="color:var(--blue);">host:port</code><br>
+          4. 缓存实际路径到 registeredPaths（用于反注册）
+        </div>
+      </div>
+      <div class="card green-top" style="margin-bottom:12px;">
+        <div class="card-title" style="color:var(--green);">服务发现（Consumer 调用）</div>
+        <div class="card-desc" style="font-size:13px;">
+          1. 读取 <code style="color:var(--green);">/dg-rpc/HelloService</code> 下所有子节点<br>
+          2. 逐一读取节点数据，解析为 ServiceInstance<br>
+          3. 负载均衡选择一个实例发起调用<br>
+          <span style="color:var(--orange);">当前：每次调用都主动拉取（优化方向见右）</span>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--red);">
+        <div class="card-title">为什么用临时顺序节点？</div>
+        <div class="card-desc" style="font-size:13px;">
+          <strong>临时</strong>：进程崩了/网络断了，ZK会话超时，节点自动删除<br>
+          <strong>顺序</strong>：避免多节点同名冲突，自动加序号后缀
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="border-top:3px solid var(--purple); margin-bottom:12px;">
+        <div class="card-title" style="color:var(--purple);">ZooKeeper 树形结构</div>
+        <div class="code-block" style="font-size:12px; line-height:1.8;">
+/dg-rpc                        ← 根路径(持久)
+  └── HelloService             ← 服务节点(持久)
+        ├── instance-0000000000  ← 实例1(临时) data="192.168.1.10:8080"
+        └── instance-0000000001  ← 实例2(临时) data="192.168.1.11:8080"</div>
+      </div>
+      <div class="card orange-top" style="margin-bottom:12px;">
+        <div class="card-title" style="color:var(--orange);">当前不足与优化方向</div>
+        <div class="card-desc" style="font-size:13px;">
+          <strong>问题</strong>：每次调用都查 ZK，延迟高、压力大<br><br>
+          <strong>优化方案</strong>：<br>
+          1. ConcurrentHashMap 本地缓存<br>
+          2. 5秒过期时间<br>
+          3. Watcher 监听 NodeChildrenChanged 事件刷新<br>
+          → 读取频率从"每次调用"降到"最多5秒一次+事件触发"
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <div class="card-title">ZK 挂了怎么办？</div>
+        <div class="card-desc" style="font-size:13px;">
+          已有连接(channelMap缓存)不受影响<br>
+          新服务注册不了，新消费者找不到服务<br>
+          <span style="color:var(--orange);">缺少本地缓存降级机制——后续改进方向</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: Spring Integration ==================== -->
+<div class="slide" data-slide="8">
+  <div class="section-header">
+    <h2>Spring 注解集成</h2>
+    <div class="subtitle">两个注解搞定，接入零门槛</div>
+  </div>
+  <div class="cards cards-2" style="margin-top:12px;">
+    <div class="card blue-top">
+      <div class="card-title" style="color:var(--blue);">@RpcService — 提供者</div>
+      <div class="card-desc" style="font-size:13px;">
+        <div class="code-block" style="margin-bottom:10px; font-size:12px;">@RpcService
+public class HelloServiceImpl implements HelloService {
+    public String sayHello(String name) {
+        return "Hello, " + name + "!";
+    }
+}</div>
+        <strong>RpcServiceBeanPostProcessor</strong> 在 postProcessAfterInitialization 阶段：<br>
+        1. 扫描 Bean 上的 @RpcService 注解<br>
+        2. 取 <code style="color:var(--blue);">bean.getClass().getInterfaces()[0].getName()</code> 作为服务名<br>
+        3. 将 Bean 注册到本地 serviceMap
+      </div>
+    </div>
+    <div class="card green-top">
+      <div class="card-title" style="color:var(--green);">@RpcReference — 消费者</div>
+      <div class="card-desc" style="font-size:13px;">
+        <div class="code-block" style="margin-bottom:10px; font-size:12px;">@Component
+public class ConsumerBean {
+    @RpcReference
+    private HelloService helloService;
+}</div>
+        <strong>RpcReferenceBeanPostProcessor</strong> 在 postProcessAfterInitialization 阶段：<br>
+        1. 遍历 Bean 的所有 Field<br>
+        2. 找到标注 @RpcReference 的字段<br>
+        3. <code style="color:var(--green);">RpcClientProxy.createProxy()</code> 创建动态代理<br>
+        4. <code style="color:var(--green);">field.set(bean, proxy)</code> 反射注入
+      </div>
+    </div>
+  </div>
+  <div class="mt-20">
+    <div class="card" style="border-top:3px solid var(--purple);">
+      <div class="card-title" style="color:var(--purple);">启动顺序控制 — ApplicationListener&lt;ContextRefreshedEvent&gt;</div>
+      <div class="card-desc" style="font-size:14px;">
+        <div class="flow-row" style="margin-bottom:12px;">
+          <div class="flow-box" style="background:var(--surface); color:var(--text); border-color:var(--border);">Spring容器启动</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="background:var(--blue-bg); color:var(--blue); border-color:var(--blue);">Bean初始化</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="background:var(--green-bg); color:var(--green); border-color:var(--green);">收集@RpcService</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="background:var(--orange-bg); color:var(--orange); border-color:var(--orange);">ContextRefreshedEvent</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="background:var(--purple-bg); color:var(--purple); border-color:var(--purple);">启动Netty服务端</div>
+        </div>
+        确保所有 Bean 就绪后才启动服务端，避免"服务已发布但 Bean 未准备好"的竞态问题。<code style="color:var(--blue);">@PreDestroy</code> 保证优雅关闭。
+      </div>
+    </div>
+  </div>
+  <div class="mt-16" style="text-align:center;">
+    <span class="tag tag-blue" style="margin:3px;">RpcAutoConfiguration</span>
+    <span class="tag tag-green" style="margin:3px;">META-INF/spring/...AutoConfiguration.imports</span>
+    <span class="tag tag-orange" style="margin:3px;">Spring Boot 自动装配</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: Full Call Chain ==================== -->
+<div class="slide" data-slide="9">
+  <div class="section-header">
+    <h2>一次完整调用链路</h2>
+    <div class="subtitle">从 sayHello("World") 到拿到结果，端到端全流程</div>
+  </div>
+  <div class="pipeline" style="margin-top:4px;">
+    <div class="pipe-item" style="border-left-color:var(--purple);">
+      <div class="pipe-num" style="background:var(--purple);">1</div>
+      <div class="pipe-title">业务调用</div>
+      <div class="pipe-desc">helloService.sayHello("World") → RpcClientProxy.invoke() 拦截</div>
+    </div>
+    <div class="pipe-item" style="border-left-color:var(--blue);">
+      <div class="pipe-num">2</div>
+      <div class="pipe-title">服务发现</div>
+      <div class="pipe-desc">ZooKeeper.discover("HelloService") → 获取实例列表 → LoadBalancer.select() 选一个</div>
+    </div>
+    <div class="pipe-item" style="border-left-color:var(--orange);">
+      <div class="pipe-num" style="background:var(--orange);">3</div>
+      <div class="pipe-title">构造 & 编码</div>
+      <div class="pipe-desc">RpcRequest → 序列化 → RpcMessage(+19字节协议头) → RpcMessageEncoder → ByteBuf</div>
+    </div>
+    <div class="pipe-item" style="border-left-color:var(--green);">
+      <div class="pipe-num" style="background:var(--green);">4</div>
+      <div class="pipe-title">Future 等待</div>
+      <div class="pipe-desc">channel.writeAndFlush(msg) → CompletableFuture 放入等待表 → future.get() 阻塞</div>
+    </div>
+    <div class="pipe-item" style="border-left-color:var(--teal);">
+      <div class="pipe-num" style="background:var(--teal);">5</div>
+      <div class="pipe-title">服务端处理</div>
+      <div class="pipe-desc">RpcMessageDecoder 校验魔数+拆包 → 反序列化 → RequestHandler 反射执行 method.invoke()</div>
+    </div>
+    <div class="pipe-item" style="border-left-color:var(--red);">
+      <div class="pipe-num" style="background:var(--red);">6</div>
+      <div class="pipe-title">响应返回</div>
+      <div class="pipe-desc">RpcResponse → 编码 → 网络传输 → RpcClientHandler 按 requestId 匹配 → future.complete() 唤醒</div>
+    </div>
+  </div>
+  <div class="highlight mt-16">
+    链路可视化：RpcTrace 在每个关键节点投递事件（step 1-6），前端通过 <em>SSE 实时推送</em>，浏览器可看到完整调用路径。
+  </div>
+  <div class="cards cards-3 mt-16">
+    <div class="card" style="text-align:center; border-top:3px solid var(--blue);">
+      <div class="card-title">异步转同步</div>
+      <div class="card-desc">CompletableFuture 等待表<br>requestId 匹配请求与响应</div>
+    </div>
+    <div class="card" style="text-align:center; border-top:3px solid var(--orange);">
+      <div class="card-title">异常透传</div>
+      <div class="card-desc">InvocationTargetException → getCause()<br>→ 封装到 RpcResponse → 客户端 throw</div>
+    </div>
+    <div class="card" style="text-align:center; border-top:3px solid var(--green);">
+      <div class="card-title">JSON 类型矫正</div>
+      <div class="card-desc">Gson 反序列化数字默认 Double<br>代理层按 returnType 矫正为 int/long</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: Test Results ==================== -->
+<div class="slide" data-slide="10">
+  <div class="section-header">
+    <h2>测试结果</h2>
+    <div class="subtitle">功能测试全通过 + 性能基准测试</div>
+  </div>
+  <div class="cards cards-3" style="margin-top:12px;">
+    <div class="card blue-top" style="text-align:center;">
+      <div class="card-title">远程调用</div>
+      <div class="card-desc">sayHello 返回正确结果<br>add(1,2) = 3</div>
+    </div>
+    <div class="card green-top" style="text-align:center;">
+      <div class="card-title">协议解析</div>
+      <div class="card-desc">魔数校验 · 粘包拆包<br>序列化动态切换</div>
+    </div>
+    <div class="card orange-top" style="text-align:center;">
+      <div class="card-title">负载均衡</div>
+      <div class="card-desc">轮询 RoundRobin<br>随机 Random</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purple); text-align:center;">
+      <div class="card-title">Spring 集成</div>
+      <div class="card-desc">@RpcService 注册<br>@RpcReference 注入</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--teal); text-align:center;">
+      <div class="card-title">服务发现</div>
+      <div class="card-desc">ZooKeeper 注册/发现<br>InMemory 内存模式</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--red); text-align:center;">
+      <div class="card-title">链路可视化</div>
+      <div class="card-desc">SSE 实时推送<br>step 1-6 全链路追踪</div>
+    </div>
+  </div>
+  <div class="section-header" style="margin-top:28px; margin-bottom:12px;">
+    <h2 style="font-size:22px;">性能基准测试</h2>
+    <div class="subtitle" style="font-size:13px;">单机回环 · add(int,int) · 20并发 · 50000次调用 · 5000次预热</div>
+  </div>
+  <div class="two-col">
+    <div>
+      <table class="s-table">
+        <tr><th>序列化方式</th><th>吞吐量 (ops/s)</th><th>平均延迟 (μs)</th><th>P99延迟 (μs)</th></tr>
+        <tr><td><strong>JSON (Gson)</strong></td><td style="color:var(--blue); font-weight:700;">74,786</td><td>265.25</td><td>534.90</td></tr>
+        <tr><td>Hessian</td><td>42,540</td><td>467.98</td><td>957.20</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="highlight">
+        JSON 吞吐量约为 Hessian 的 <em>1.76 倍</em>，但这是简单参数场景。Gson 对基础类型解析极快，Hessian 有类型标记、引用表等二进制结构开销。真实环境下复杂对象+网络开销，Hessian 的二进制压缩优势才能体现。<em>框架默认仍为 Hessian</em>。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: Summary ==================== -->
+<div class="slide" data-slide="11">
+  <div class="section-header">
+    <h2>总结与反思</h2>
+    <div class="subtitle">六大核心成果 + 不足与改进方向</div>
+  </div>
+  <div class="cards cards-3" style="margin-top:8px;">
+    <div class="card blue-top" style="text-align:center;">
+      <div class="card-num">1</div>
+      <div class="card-title">自定义协议</div>
+      <div class="card-desc">19字节二进制协议头<br>解决粘包拆包<br>魔数校验防误连</div>
+    </div>
+    <div class="card orange-top" style="text-align:center;">
+      <div class="card-num">2</div>
+      <div class="card-title">异步转同步</div>
+      <div class="card-desc">Netty + CompletableFuture<br>两层Future语义分离<br>超时清理机制</div>
+    </div>
+    <div class="card green-top" style="text-align:center;">
+      <div class="card-num">3</div>
+      <div class="card-title">服务治理</div>
+      <div class="card-desc">ZooKeeper临时顺序节点<br>服务注册发现<br>自动摘除</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purple); text-align:center;">
+      <div class="card-num" style="background:var(--purple);">4</div>
+      <div class="card-title">透明调用</div>
+      <div class="card-desc">JDK动态代理+反射<br>异常透传<br>含重试机制</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--teal); text-align:center;">
+      <div class="card-num" style="background:var(--teal);">5</div>
+      <div class="card-title">Spring集成</div>
+      <div class="card-desc">@RpcService @RpcReference<br>ApplicationListener<br>启动顺序可控</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--red); text-align:center;">
+      <div class="card-num" style="background:var(--red);">6</div>
+      <div class="card-title">链路可视化</div>
+      <div class="card-desc">SSE实时推送<br>step级别追踪<br>调用过程可观测</div>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:20px;">
+    <div class="card" style="border-top:3px solid var(--red);">
+      <div class="card-title" style="color:var(--red);">当前不足</div>
+      <div class="card-desc" style="font-size:13px; line-height:1.8;">
+        • 缺少熔断限流机制<br>
+        • 连接池管理不完善（仅单连接缓存）<br>
+        • 无本地服务发现缓存<br>
+        • 方法反射未做缓存优化<br>
+        • 业务逻辑跑在I/O线程上未隔离<br>
+        • 测试覆盖不够（缺少异常/边界/长时间稳定性测试）
+      </div>
+    </div>
+    <div class="card green-top">
+      <div class="card-title" style="color:var(--green);">改进方向</div>
+      <div class="card-desc" style="font-size:13px; line-height:1.8;">
+        • 补充单元测试 + JMH基准测试 + GC日志分析<br>
+        • ConcurrentHashMap本地缓存 + Watcher监听优化服务发现<br>
+        • RequestHandler 业务线程池隔离<br>
+        • Method 缓存（ConcurrentHashMap，预计提升2-3倍）<br>
+        • 连接池 + 心跳保活 + 断线重连<br>
+        • Sentinel 熔断降级
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: Thanks ==================== -->
+<div class="slide closing-slide" data-slide="12">
+  <div class="deco-circle-r"></div>
+  <h2>感谢各位老师</h2>
+  <div class="closing-quote">
+    dg-rpc 的价值不在于替代 Dubbo，而在于<em>让你能看清 RPC 每一步在做什么</em>——从代理拦截到协议编码，从服务发现到反射调用，链路是完整的、代码是可读的。
+  </div>
+  <div class="closing-info">
+    答辩人：丁岗 &nbsp;&middot;&nbsp; 学号：2701220304 &nbsp;&middot;&nbsp; 安徽科技工程大学<br>
+    <span style="opacity:0.5; font-size:14px;">请各位老师批评指正</span>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="prevBtn" onclick="navigate(-1)" disabled>&larr; 上一页</button>
+  <div>
+    <div class="page-dots" id="dots"></div>
+  </div>
+  <div class="page-info" id="pageInfo">1 / 12</div>
+  <button id="nextBtn" class="primary" onclick="navigate(1)">下一页 &rarr;</button>
+</div>
+
+<script>
+let current = 1;
+const total = 12;
+
+const dotsEl = document.getElementById('dots');
+for (let i = 1; i <= total; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 1 ? ' active' : '');
+  dot.dataset.slide = i;
+  dot.onclick = () => goTo(i);
+  dotsEl.appendChild(dot);
+}
+
+// Initial: first slide is blue bg
+document.querySelector('.nav').classList.add('nav-blue');
+
+function goTo(n) {
+  if (n < 1 || n > total || n === current) return;
+  document.querySelector('.slide.active').classList.remove('active');
+  current = n;
+  document.querySelector('[data-slide="' + current + '"]').classList.add('active');
+  document.getElementById('pageInfo').textContent = current + ' / ' + total;
+  document.getElementById('prevBtn').disabled = current === 1;
+  document.getElementById('nextBtn').disabled = current === total;
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i + 1 === current);
+  });
+  // Switch nav style for blue-bg slides
+  var nav = document.querySelector('.nav');
+  var isBlue = (current === 1 || current === total);
+  nav.classList.toggle('nav-blue', isBlue);
+}
+
+function navigate(dir) { goTo(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); navigate(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); navigate(-1); }
+  if (e.key === 'Home') { e.preventDefault(); goTo(1); }
+  if (e.key === 'End') { e.preventDefault(); goTo(total); }
+});
+</script>
+</body>
+</html>
