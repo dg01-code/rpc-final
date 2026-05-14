@@ -73,7 +73,7 @@ body {
 .slide {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
-  padding: 56px 72px 80px;
+  padding: 40px 60px 56px;
   opacity: 0; pointer-events: none;
   transition: opacity 0.35s ease;
   overflow: hidden;
@@ -107,7 +107,7 @@ body {
   background: linear-gradient(135deg, #1677FF 0%, #00B4FF 100%) !important;
   color: var(--white);
   position: absolute; inset: 0; overflow: hidden;
-  padding: 60px 72px 80px;
+  padding: 40px 60px 56px;
   width: 100vw; height: 100vh; min-height: 100vh;
 }
 .title-slide::before { display: none; }
@@ -131,24 +131,24 @@ body {
   letter-spacing: 4px; text-transform: uppercase;
   background: rgba(255,255,255,0.12);
   padding: 8px 28px; border-radius: 24px;
-  margin-bottom: 48px; display: inline-block;
+  margin-bottom: 36px; display: inline-block;
 }
 .title-slide h1 {
-  font-size: 52px; font-weight: 700;
-  line-height: 1.3; margin-bottom: 32px;
+  font-size: 48px; font-weight: 700;
+  line-height: 1.3; margin-bottom: 24px;
   max-width: 900px;
 }
 .title-slide .sub {
-  font-size: 22px; font-weight: 400;
-  opacity: 0.88; margin-bottom: 24px;
+  font-size: 20px; font-weight: 400;
+  opacity: 0.88; margin-bottom: 18px;
 }
 .title-slide .desc {
-  font-size: 17px; font-weight: 300;
+  font-size: 16px; font-weight: 300;
   opacity: 0.65; max-width: 680px;
   line-height: 1.7;
 }
 .title-slide .meta {
-  margin-top: 56px;
+  margin-top: 40px;
   font-size: 16px; opacity: 0.7;
 }
 
@@ -158,7 +158,7 @@ body {
   background: linear-gradient(135deg, #1677FF 0%, #00B4FF 100%) !important;
   color: var(--white);
   position: absolute; inset: 0; overflow: hidden;
-  padding: 60px 72px 80px;
+  padding: 40px 60px 56px;
   width: 100vw; height: 100vh; min-height: 100vh;
 }
 .closing-slide::before { display: none; }
@@ -178,31 +178,31 @@ body {
   pointer-events: none;
 }
 .closing-slide h2 {
-  font-size: 42px; font-weight: 700; margin-bottom: 36px;
+  font-size: 38px; font-weight: 700; margin-bottom: 28px;
 }
 .closing-slide .closing-quote {
-  font-size: 20px; line-height: 1.8;
+  font-size: 18px; line-height: 1.8;
   opacity: 0.88; max-width: 700px;
   background: rgba(255,255,255,0.1);
-  padding: 28px 36px; border-radius: 12px;
-  margin-bottom: 32px;
+  padding: 22px 32px; border-radius: 12px;
+  margin-bottom: 24px;
 }
 .closing-slide .closing-info {
   font-size: 16px; opacity: 0.65;
 }
 
 /* ===== Section Header ===== */
-.section-header { margin-bottom: 28px; }
+.section-header { margin-bottom: 14px; }
 .section-header h2 {
-  font-size: 32px; font-weight: 700; color: var(--text);
-  margin-bottom: 8px;
+  font-size: 28px; font-weight: 700; color: var(--text);
+  margin-bottom: 4px;
 }
 .section-header .subtitle {
-  font-size: 15px; color: var(--text-secondary);
+  font-size: 14px; color: var(--text-secondary);
 }
 
 /* ===== Cards ===== */
-.cards { display: grid; gap: 16px; }
+.cards { display: grid; gap: 10px; }
 .cards-2 { grid-template-columns: 1fr 1fr; }
 .cards-3 { grid-template-columns: 1fr 1fr 1fr; }
 .cards-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
@@ -211,7 +211,7 @@ body {
 .card {
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 8px; padding: 22px;
+  border-radius: 8px; padding: 14px 16px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -225,17 +225,17 @@ body {
 
 .card-num {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   background: var(--blue); color: var(--white);
-  font-size: 14px; font-weight: 700; margin-bottom: 10px;
+  font-size: 13px; font-weight: 700; margin-bottom: 6px;
 }
 .card-title {
-  font-size: 17px; font-weight: 600; color: var(--text);
-  margin-bottom: 8px;
+  font-size: 15px; font-weight: 600; color: var(--text);
+  margin-bottom: 5px;
 }
 .card-desc {
-  font-size: 14px; color: var(--text-secondary);
-  line-height: 1.7;
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 /* ===== Tags ===== */
@@ -251,16 +251,16 @@ body {
 .tag-purple { background: var(--purple-bg); color: var(--purple); }
 
 /* ===== Table ===== */
-.s-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.s-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .s-table th {
   background: var(--blue); color: var(--white);
-  padding: 12px 18px; text-align: left; font-weight: 500;
+  padding: 8px 14px; text-align: left; font-weight: 500;
 }
 .s-table th:first-child { border-radius: 6px 0 0 0; }
 .s-table th:last-child { border-radius: 0 6px 0 0; }
 .s-table td {
   border-bottom: 1px solid var(--border);
-  padding: 12px 18px; color: var(--text-secondary);
+  padding: 8px 14px; color: var(--text-secondary);
 }
 .s-table tr:last-child td { border-bottom: none; }
 
@@ -268,16 +268,16 @@ body {
 .highlight {
   background: var(--blue-bg);
   border-left: 4px solid var(--blue);
-  padding: 16px 22px; border-radius: 0 10px 10px 0;
-  font-size: 15px; line-height: 1.8; color: var(--text-secondary);
+  padding: 12px 18px; border-radius: 0 10px 10px 0;
+  font-size: 14px; line-height: 1.7; color: var(--text-secondary);
 }
 .highlight em { color: var(--blue); font-style: normal; font-weight: 600; }
 
 /* ===== Pipeline ===== */
-.pipeline { display: flex; flex-direction: column; gap: 10px; }
+.pipeline { display: flex; flex-direction: column; gap: 6px; }
 .pipe-item {
-  display: flex; align-items: center; gap: 16px;
-  padding: 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 16px;
   background: var(--surface); border-left: 3px solid var(--blue);
   border-radius: 0 8px 8px 0;
   transition: background 0.2s;
@@ -285,30 +285,30 @@ body {
 .pipe-item:hover { background: var(--blue-bg); }
 .pipe-num {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 26px; height: 26px; border-radius: 50%;
   background: var(--blue); color: var(--white);
-  font-size: 13px; font-weight: 700; flex-shrink: 0;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
 }
-.pipe-title { font-size: 15px; font-weight: 600; color: var(--text); min-width: 120px; }
-.pipe-desc { font-size: 14px; color: var(--text-secondary); }
+.pipe-title { font-size: 14px; font-weight: 600; color: var(--text); min-width: 100px; }
+.pipe-desc { font-size: 13px; color: var(--text-secondary); }
 
 /* ===== Flow ===== */
-.flow-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.flow-row { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
 .flow-box {
-  padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
   border: 2px solid transparent;
 }
 .flow-arrow { font-size: 22px; color: var(--text-muted); }
 
 /* ===== Two Column ===== */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
 /* ===== Code Block ===== */
 .code-block {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; padding: 18px 22px;
-  font-family: var(--mono); font-size: 13px;
-  line-height: 1.7; color: var(--text-secondary);
+  border-radius: 8px; padding: 12px 16px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.6; color: var(--text-secondary);
   overflow: hidden; white-space: pre-wrap;
 }
 
@@ -316,11 +316,11 @@ body {
 .proto-header {
   display: flex; border-radius: 8px; overflow: hidden;
   font-family: var(--mono); font-size: 13px; font-weight: 600;
-  margin: 16px 0;
+  margin: 10px 0;
 }
 .proto-field {
   display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 14px 10px;
+  justify-content: center; padding: 10px 8px;
   color: var(--white); border-right: 2px solid rgba(255,255,255,0.2);
 }
 .proto-field:last-child { border-right: none; }
@@ -328,20 +328,20 @@ body {
 .proto-field .fsize { font-size: 10px; opacity: 0.65; }
 
 /* ===== Architecture Layer ===== */
-.arch-layers { display: flex; flex-direction: column; gap: 8px; }
+.arch-layers { display: flex; flex-direction: column; gap: 5px; }
 .arch-layer {
-  display: flex; align-items: center; gap: 16px;
-  padding: 14px 22px; border-radius: 8px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 18px; border-radius: 8px;
   border-left: 4px solid;
 }
 .arch-layer .layer-name {
-  font-size: 15px; font-weight: 600; min-width: 130px;
+  font-size: 14px; font-weight: 600; min-width: 110px;
 }
 .arch-layer .layer-modules {
-  font-size: 13px; color: var(--text-secondary);
+  font-size: 12px; color: var(--text-secondary);
 }
 .arch-layer .layer-desc {
-  font-size: 13px; color: var(--text-muted); margin-left: auto;
+  font-size: 12px; color: var(--text-muted); margin-left: auto;
 }
 
 /* ===== Metric Card ===== */
@@ -420,12 +420,12 @@ body {
 }
 
 /* ===== Content utility ===== */
-.mt-12 { margin-top: 12px; }
-.mt-16 { margin-top: 16px; }
-.mt-20 { margin-top: 20px; }
-.mt-24 { margin-top: 24px; }
+.mt-12 { margin-top: 8px; }
+.mt-16 { margin-top: 12px; }
+.mt-20 { margin-top: 16px; }
+.mt-24 { margin-top: 20px; }
 .mb-8 { margin-bottom: 8px; }
-.mb-16 { margin-bottom: 16px; }
+.mb-16 { margin-bottom: 12px; }
 .gap-12 { gap: 12px; }
 .text-center { text-align: center; }
 .flex-center { display: flex; justify-content: center; align-items: center; }
@@ -455,7 +455,7 @@ body {
     <h2>汇报大纲</h2>
     <div class="subtitle">以下将从六个方面展开汇报</div>
   </div>
-  <div class="cards cards-3" style="margin-top:20px;">
+  <div class="cards cards-3" style="margin-top:12px;">
     <div class="card blue-top" style="text-align:center;">
       <div class="card-num">1</div>
       <div class="card-title">选题动机</div>
@@ -495,9 +495,9 @@ body {
     <h2>选题动机</h2>
     <div class="subtitle">为什么从零手写一个 RPC 框架？</div>
   </div>
-  <div class="two-col" style="margin-top:12px;">
+  <div class="two-col" style="margin-top:8px;">
     <div>
-      <div class="highlight" style="margin-bottom:20px;">
+      <div class="highlight" style="margin-bottom:12px;">
         做分布式开发，RPC 是绕不开的技术——服务拆分后，进程内方法调用变成了跨网络远程调用，开发者要处理<em>序列化、网络传输、服务寻址</em>这些底层问题。
       </div>
       <div class="card blue-top">
@@ -506,7 +506,7 @@ body {
           Dubbo、gRPC 功能强大，但代码量大、配置多，初学者很难看清<em>"一次RPC调用到底经历了什么"</em>
         </div>
       </div>
-      <div class="card orange-top" style="margin-top:12px;">
+      <div class="card orange-top" style="margin-top:8px;">
         <div class="card-title" style="color:var(--orange);">dg-rpc 的目标</div>
         <div class="card-desc">
           <strong>从零手写轻量级RPC框架，把核心链路走通，让每一步都能说清楚为什么这么做</strong>
@@ -514,7 +514,7 @@ body {
       </div>
     </div>
     <div>
-      <div class="card green-top" style="margin-bottom:12px;">
+      <div class="card green-top" style="margin-bottom:8px;">
         <div class="card-title" style="color:var(--green);">框架定位</div>
         <div class="card-desc">
           不是替代 Dubbo，而是<em>让你能看清 RPC 每一步在做什么</em>——从代理拦截到协议编码，从服务发现到反射调用，链路完整、代码可读
@@ -531,9 +531,9 @@ body {
           <span class="tag tag-red" style="margin:2px;">SSE可视化</span>
         </div>
       </div>
-      <div class="card" style="border-top:3px solid var(--teal); margin-top:12px;">
+      <div class="card" style="border-top:3px solid var(--teal); margin-top:8px;">
         <div class="card-title" style="color:var(--teal);">核心价值</div>
-        <div class="card-desc" style="font-size:15px;">
+        <div class="card-desc" style="font-size:14px;">
           <strong>看得清</strong>：每层代码可直接读懂<br>
           <strong>讲得明</strong>：每个决策都有明确理由<br>
           <strong>跑得通</strong>：端到端链路完整可运行
@@ -549,7 +549,7 @@ body {
     <h2>框架整体架构</h2>
     <div class="subtitle">六层七模块，按变化点分层</div>
   </div>
-  <div class="two-col" style="margin-top:8px;">
+  <div class="two-col" style="margin-top:4px;">
     <div>
       <div class="arch-layers">
         <div class="arch-layer" style="background:var(--purple-bg); border-color:var(--purple);">
@@ -585,10 +585,10 @@ body {
       </div>
     </div>
     <div>
-      <div class="highlight" style="margin-bottom:16px;">
+      <div class="highlight" style="margin-bottom:10px;">
         <em>按变化点分层</em>——协议格式可能变、注册中心可能换、序列化方式可能换，这些都被隔离成独立模块。改一个不影响其他。
       </div>
-      <div class="card blue-top" style="margin-bottom:12px;">
+      <div class="card blue-top" style="margin-bottom:8px;">
         <div class="card-title">开闭原则</div>
         <div class="card-desc">
           序列化 → 实现 <code style="color:var(--blue);">Serializer</code> 接口<br>
@@ -614,7 +614,7 @@ body {
     <h2>自定义协议头设计</h2>
     <div class="subtitle">19 字节固定头，解决 TCP 粘包/拆包</div>
   </div>
-  <div class="proto-header" style="margin-top:12px;">
+  <div class="proto-header" style="margin-top:8px;">
     <div class="proto-field" style="background:var(--blue); flex:0 0 100px;">
       <div class="fname">Magic</div>
       <div class="fsize">4 字节</div>
@@ -640,7 +640,7 @@ body {
       <div class="fsize">4 字节</div>
     </div>
   </div>
-  <div class="cards cards-3 mt-16">
+  <div class="cards cards-3 mt-12">
     <div class="card blue-top">
       <div class="card-title">Magic 0x44475250</div>
       <div class="card-desc">"DGRP"的ASCII编码，收到数据先校验魔数，不对直接丢弃——快速排错防误连</div>
@@ -654,11 +654,11 @@ body {
       <div class="card-desc">配合ByteToMessageDecoder，不够就resetReaderIndex()等待，够了就读取——粘包拆包解法</div>
     </div>
   </div>
-  <div class="two-col mt-16">
+  <div class="two-col mt-12">
     <div class="card" style="border-top:3px solid var(--purple);">
       <div class="card-title">vs Dubbo 协议头</div>
-      <div class="card-desc" style="font-size:13px;">
-        <table class="s-table" style="font-size:12px;">
+      <div class="card-desc" style="font-size:12px;">
+        <table class="s-table" style="font-size:11px;">
           <tr><th>对比项</th><th>Dubbo</th><th>dg-rpc</th></tr>
           <tr><td>头长度</td><td>16字节</td><td>19字节</td></tr>
           <tr><td>Magic</td><td>2字节</td><td>4字节(更不易碰撞)</td></tr>
@@ -669,7 +669,7 @@ body {
     </div>
     <div class="card" style="border-top:3px solid var(--orange);">
       <div class="card-title">编解码核心逻辑</div>
-      <div class="card-desc" style="font-size:13px;">
+      <div class="card-desc" style="font-size:12px;">
         <strong>Encoder</strong>：RpcMessageEncoder extends MessageToByteEncoder<br>
         → 按19字节头顺序写入ByteBuf<br><br>
         <strong>Decoder</strong>：RpcMessageDecoder extends ByteToMessageDecoder<br>
@@ -688,10 +688,10 @@ body {
     <h2>异步转同步：CompletableFuture 桥接</h2>
     <div class="subtitle">Netty 是异步的，业务代码期望同步调用</div>
   </div>
-  <div class="highlight mb-16">
+  <div class="highlight mb-8">
     业务代码写 <code style="color:var(--blue);">helloService.sayHello("world")</code>，期望拿到 String，不想管 Future 和回调。用 <em>CompletableFuture</em> 做桥接，让异步 Netty 变成同步语义。
   </div>
-  <div class="pipeline" style="margin-top:8px;">
+  <div class="pipeline" style="margin-top:4px;">
     <div class="pipe-item">
       <div class="pipe-num">1</div>
       <div class="pipe-title">创建 Future</div>
@@ -713,10 +713,10 @@ body {
       <div class="pipe-desc">调用线程被唤醒，检查异常/JSON类型矫正，返回结果给业务代码</div>
     </div>
   </div>
-  <div class="two-col mt-20">
+  <div class="two-col mt-12">
     <div class="card blue-top">
       <div class="card-title">两层 Future 的区别</div>
-      <div class="card-desc" style="font-size:13px;">
+      <div class="card-desc" style="font-size:12px;">
         <strong style="color:var(--blue);">ChannelFuture</strong>（Netty层）<br>
         → channel.writeAndFlush() 返回<br>
         → 代表"消息是否写到了网络缓冲区"<br><br>
@@ -728,7 +728,7 @@ body {
     </div>
     <div class="card" style="border-top:3px solid var(--orange);">
       <div class="card-title">超时与清理</div>
-      <div class="card-desc" style="font-size:13px;">
+      <div class="card-desc" style="font-size:12px;">
         超时 → future.get() 抛 TimeoutException<br>
         → removePendingRequest(requestId) 清理等待表<br>
         → future.cancel(true) 释放资源<br>
@@ -745,20 +745,20 @@ body {
     <h2>ZooKeeper 服务注册与发现</h2>
     <div class="subtitle">临时顺序节点实现服务自动注册与摘除</div>
   </div>
-  <div class="two-col" style="margin-top:8px;">
+  <div class="two-col" style="margin-top:4px;">
     <div>
-      <div class="card blue-top" style="margin-bottom:12px;">
+      <div class="card blue-top" style="margin-bottom:8px;">
         <div class="card-title" style="color:var(--blue);">服务注册（Provider 启动）</div>
-        <div class="card-desc" style="font-size:13px;">
+        <div class="card-desc" style="font-size:12px;">
           1. 检查持久节点 <code style="color:var(--blue);">/dg-rpc/HelloService</code> 是否存在<br>
           2. 创建<em>临时顺序节点</em>：<code style="color:var(--blue);">/dg-rpc/HelloService/instance-0000000000</code><br>
           3. 节点数据 = <code style="color:var(--blue);">host:port</code><br>
           4. 缓存实际路径到 registeredPaths（用于反注册）
         </div>
       </div>
-      <div class="card green-top" style="margin-bottom:12px;">
+      <div class="card green-top" style="margin-bottom:8px;">
         <div class="card-title" style="color:var(--green);">服务发现（Consumer 调用）</div>
-        <div class="card-desc" style="font-size:13px;">
+        <div class="card-desc" style="font-size:12px;">
           1. 读取 <code style="color:var(--green);">/dg-rpc/HelloService</code> 下所有子节点<br>
           2. 逐一读取节点数据，解析为 ServiceInstance<br>
           3. 负载均衡选择一个实例发起调用<br>
@@ -767,24 +767,24 @@ body {
       </div>
       <div class="card" style="border-top:3px solid var(--red);">
         <div class="card-title">为什么用临时顺序节点？</div>
-        <div class="card-desc" style="font-size:13px;">
+        <div class="card-desc" style="font-size:12px;">
           <strong>临时</strong>：进程崩了/网络断了，ZK会话超时，节点自动删除<br>
           <strong>顺序</strong>：避免多节点同名冲突，自动加序号后缀
         </div>
       </div>
     </div>
     <div>
-      <div class="card" style="border-top:3px solid var(--purple); margin-bottom:12px;">
+      <div class="card" style="border-top:3px solid var(--purple); margin-bottom:8px;">
         <div class="card-title" style="color:var(--purple);">ZooKeeper 树形结构</div>
-        <div class="code-block" style="font-size:12px; line-height:1.8;">
+        <div class="code-block" style="font-size:11px; line-height:1.6;">
 /dg-rpc                        ← 根路径(持久)
   └── HelloService             ← 服务节点(持久)
         ├── instance-0000000000  ← 实例1(临时) data="192.168.1.10:8080"
         └── instance-0000000001  ← 实例2(临时) data="192.168.1.11:8080"</div>
       </div>
-      <div class="card orange-top" style="margin-bottom:12px;">
+      <div class="card orange-top" style="margin-bottom:8px;">
         <div class="card-title" style="color:var(--orange);">当前不足与优化方向</div>
-        <div class="card-desc" style="font-size:13px;">
+        <div class="card-desc" style="font-size:12px;">
           <strong>问题</strong>：每次调用都查 ZK，延迟高、压力大<br><br>
           <strong>优化方案</strong>：<br>
           1. ConcurrentHashMap 本地缓存<br>
@@ -795,7 +795,7 @@ body {
       </div>
       <div class="card" style="border-top:3px solid var(--teal);">
         <div class="card-title">ZK 挂了怎么办？</div>
-        <div class="card-desc" style="font-size:13px;">
+        <div class="card-desc" style="font-size:12px;">
           已有连接(channelMap缓存)不受影响<br>
           新服务注册不了，新消费者找不到服务<br>
           <span style="color:var(--orange);">缺少本地缓存降级机制——后续改进方向</span>
@@ -811,11 +811,11 @@ body {
     <h2>Spring 注解集成</h2>
     <div class="subtitle">两个注解搞定，接入零门槛</div>
   </div>
-  <div class="cards cards-2" style="margin-top:12px;">
+  <div class="cards cards-2" style="margin-top:8px;">
     <div class="card blue-top">
       <div class="card-title" style="color:var(--blue);">@RpcService — 提供者</div>
-      <div class="card-desc" style="font-size:13px;">
-        <div class="code-block" style="margin-bottom:10px; font-size:12px;">@RpcService
+      <div class="card-desc" style="font-size:12px;">
+        <div class="code-block" style="margin-bottom:8px; font-size:11px;">@RpcService
 public class HelloServiceImpl implements HelloService {
     public String sayHello(String name) {
         return "Hello, " + name + "!";
@@ -829,8 +829,8 @@ public class HelloServiceImpl implements HelloService {
     </div>
     <div class="card green-top">
       <div class="card-title" style="color:var(--green);">@RpcReference — 消费者</div>
-      <div class="card-desc" style="font-size:13px;">
-        <div class="code-block" style="margin-bottom:10px; font-size:12px;">@Component
+      <div class="card-desc" style="font-size:12px;">
+        <div class="code-block" style="margin-bottom:8px; font-size:11px;">@Component
 public class ConsumerBean {
     @RpcReference
     private HelloService helloService;
@@ -843,11 +843,11 @@ public class ConsumerBean {
       </div>
     </div>
   </div>
-  <div class="mt-20">
+  <div class="mt-12">
     <div class="card" style="border-top:3px solid var(--purple);">
       <div class="card-title" style="color:var(--purple);">启动顺序控制 — ApplicationListener&lt;ContextRefreshedEvent&gt;</div>
-      <div class="card-desc" style="font-size:14px;">
-        <div class="flow-row" style="margin-bottom:12px;">
+      <div class="card-desc" style="font-size:13px;">
+        <div class="flow-row" style="margin-bottom:8px;">
           <div class="flow-box" style="background:var(--surface); color:var(--text); border-color:var(--border);">Spring容器启动</div>
           <div class="flow-arrow">→</div>
           <div class="flow-box" style="background:var(--blue-bg); color:var(--blue); border-color:var(--blue);">Bean初始化</div>
@@ -862,7 +862,7 @@ public class ConsumerBean {
       </div>
     </div>
   </div>
-  <div class="mt-16" style="text-align:center;">
+  <div class="mt-12" style="text-align:center;">
     <span class="tag tag-blue" style="margin:3px;">RpcAutoConfiguration</span>
     <span class="tag tag-green" style="margin:3px;">META-INF/spring/...AutoConfiguration.imports</span>
     <span class="tag tag-orange" style="margin:3px;">Spring Boot 自动装配</span>
@@ -907,10 +907,10 @@ public class ConsumerBean {
       <div class="pipe-desc">RpcResponse → 编码 → 网络传输 → RpcClientHandler 按 requestId 匹配 → future.complete() 唤醒</div>
     </div>
   </div>
-  <div class="highlight mt-16">
+  <div class="highlight mt-12">
     链路可视化：RpcTrace 在每个关键节点投递事件（step 1-6），前端通过 <em>SSE 实时推送</em>，浏览器可看到完整调用路径。
   </div>
-  <div class="cards cards-3 mt-16">
+  <div class="cards cards-3 mt-12">
     <div class="card" style="text-align:center; border-top:3px solid var(--blue);">
       <div class="card-title">异步转同步</div>
       <div class="card-desc">CompletableFuture 等待表<br>requestId 匹配请求与响应</div>
@@ -932,7 +932,7 @@ public class ConsumerBean {
     <h2>测试结果</h2>
     <div class="subtitle">功能测试全通过 + 性能基准测试</div>
   </div>
-  <div class="cards cards-3" style="margin-top:12px;">
+  <div class="cards cards-3" style="margin-top:8px;">
     <div class="card blue-top" style="text-align:center;">
       <div class="card-title">远程调用</div>
       <div class="card-desc">sayHello 返回正确结果<br>add(1,2) = 3</div>
@@ -958,7 +958,7 @@ public class ConsumerBean {
       <div class="card-desc">SSE 实时推送<br>step 1-6 全链路追踪</div>
     </div>
   </div>
-  <div class="section-header" style="margin-top:28px; margin-bottom:12px;">
+  <div class="section-header" style="margin-top:16px; margin-bottom:8px;">
     <h2 style="font-size:22px;">性能基准测试</h2>
     <div class="subtitle" style="font-size:13px;">单机回环 · add(int,int) · 20并发 · 50000次调用 · 5000次预热</div>
   </div>
@@ -984,7 +984,7 @@ public class ConsumerBean {
     <h2>总结与反思</h2>
     <div class="subtitle">六大核心成果 + 不足与改进方向</div>
   </div>
-  <div class="cards cards-3" style="margin-top:8px;">
+  <div class="cards cards-3" style="margin-top:4px;">
     <div class="card blue-top" style="text-align:center;">
       <div class="card-num">1</div>
       <div class="card-title">自定义协议</div>
@@ -1016,10 +1016,10 @@ public class ConsumerBean {
       <div class="card-desc">SSE实时推送<br>step级别追踪<br>调用过程可观测</div>
     </div>
   </div>
-  <div class="two-col" style="margin-top:20px;">
+  <div class="two-col" style="margin-top:12px;">
     <div class="card" style="border-top:3px solid var(--red);">
       <div class="card-title" style="color:var(--red);">当前不足</div>
-      <div class="card-desc" style="font-size:13px; line-height:1.8;">
+      <div class="card-desc" style="font-size:12px; line-height:1.7;">
         • 缺少熔断限流机制<br>
         • 连接池管理不完善（仅单连接缓存）<br>
         • 无本地服务发现缓存<br>
@@ -1030,7 +1030,7 @@ public class ConsumerBean {
     </div>
     <div class="card green-top">
       <div class="card-title" style="color:var(--green);">改进方向</div>
-      <div class="card-desc" style="font-size:13px; line-height:1.8;">
+      <div class="card-desc" style="font-size:12px; line-height:1.7;">
         • 补充单元测试 + JMH基准测试 + GC日志分析<br>
         • ConcurrentHashMap本地缓存 + Watcher监听优化服务发现<br>
         • RequestHandler 业务线程池隔离<br>
@@ -1049,9 +1049,9 @@ public class ConsumerBean {
   <div class="closing-quote">
     dg-rpc 的价值不在于替代 Dubbo，而在于<em>让你能看清 RPC 每一步在做什么</em>——从代理拦截到协议编码，从服务发现到反射调用，链路是完整的、代码是可读的。
   </div>
-  <div class="closing-info">
+  <div class="closing-info" style="font-size:20px; margin-top:40px;">
     答辩人：丁岗 &nbsp;&middot;&nbsp; 学号：2701220304 &nbsp;&middot;&nbsp; 安徽科技工程大学<br>
-    <span style="opacity:0.5; font-size:14px;">请各位老师批评指正</span>
+    <span style="opacity:0.75; font-size:20px; margin-top:12px; display:inline-block;">请各位老师批评指正</span>
   </div>
 </div>
 
